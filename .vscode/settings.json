@@ -1,0 +1,8 @@
+{
+    "mochaExplorer.files": [
+      "hcs-extension/test/**/*.test.js",
+      "hcs-lib/test/**/*.test.js",
+      "hcs-cli/test/**/*.test.js"
+    ]
+  }
+  

@@ -1,0 +1,69 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+**/out/
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments (local to projects)
+**/.venv/
+
+**/node_modules/
+**/.vscode-test/
+**/out/
+
+# Poetry lock file (if you regenerate often and don't want lock conflicts)
+# Uncomment if needed:
+# **/poetry.lock
+
+# Distribution / Packaging
+*.egg-info/
+dist/
+build/
+
+# Ignoring built / distributables
+*.vsix
+*.tgz
+
+# Logs and IDE settings
+*.log
+*.swp
+*.swo
+.idea/
+# .vscode/  Intentionally keeping vscode files!
+*.tmproj
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Coverage and testing
+.coverage
+.tox/
+.nox/
+pytest_cache/
+
+# MyPy, Pyright, and other static analysis
+.mypy_cache/
+.pytest_cache/
+.pytype/
+ruff_cache/
+
+# Temporary files
+*.bak
+*.orig
+
+# Ignore local environment variables
+.env
+.env.local
+.envrc
+
+# Ignore macOS specific files
+.Trashes
+._*

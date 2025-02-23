@@ -1,0 +1,24 @@
+{
+    "folders": [
+      {
+        "path": "hcs-extension"
+      },
+      {
+        "path": "hcs-lib"
+      },
+      {
+        "path": "hcs-cli"
+      },
+      {
+        "path": "build-scripts"
+      {
+    ],
+    "settings": {
+      "mochaExplorer.files": [
+        "hcs-extension/test/**/*.test.js",
+        "hcs-lib/test/**/*.test.js",
+        "hcs-cli/test/**/*.test.js"
+      ]
+    }
+  }
+  

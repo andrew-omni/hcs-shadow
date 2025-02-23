@@ -1,0 +1,38 @@
+{
+  "name": "config-cli",
+  "version": "1.0.0",
+  "description": "CLI tool for managing configuration sets",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/omniscient-ai/hcs"
+  },
+  "author": "Andrew Austin <andrew.austin@omniscient.uk.com>",
+  "license": "UNLICENSED",
+  "bin": {
+    "config-cli": "./dist/cli.js"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "clean": "rm -rf dist build",
+    "build": "yarn link hcs-lib && ncc build src/cli.ts -o dist && mv dist/index.js dist/cli.js",
+    "test": "yarn build && mocha --require ts-node/register --recursive 'src/test/**/*.test.ts'",
+      "package": "yarn build && tar -czf dist/hcs-cli.tar.gz -C dist cli.js"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.0.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.13.4",
+    "@vercel/ncc": "^0.36.1",
+    "chai": "^4.5.0",
+    "esbuild": "^0.19.5",
+    "execa": "^8.0.1",
+    "mocha": "^10.8.2",
+    "pkg": "^5.8.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

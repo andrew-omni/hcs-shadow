@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+	  "module": "Node16",
+	  "moduleResolution": "nodenext",
+	  "target": "ES2022",
+	  "lib": ["ES2022"],
+	  "declaration": true,
+	  "declarationMap": true,
+	  "outDir": "dist",
+	  "rootDir": "src",
+	  "sourceMap": true,
+	  "esModuleInterop": true,
+	  "skipLibCheck": true,
+	  "strict": true
+	},
+	"include": ["src/**/*"],
+	"exclude": ["tests", "node_modules", "dist"]
+  }
+  

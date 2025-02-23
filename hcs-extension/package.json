@@ -1,0 +1,99 @@
+{
+  "name": "hcs-extension",
+  "displayName": "HCS Extension",
+  "description": "VSCode extension for managing HCS configurations, schemas, and models.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/omniscient-ai/hcs"
+  },
+  "author": "Andrew Austin <andrew.austin@omniscient.uk.com>",
+  "license": "UNLICENSED",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.97.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/*",
+    "onStartupFinished",
+    "onLanguage:json",
+    "onFileSystem:workspace"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hcstools.createConfigSet",
+        "title": "HCSTools: Create Config Set",
+        "category": "HCSTools"
+      },
+      {
+        "command": "hcstools.createSchema",
+        "title": "HCSTools: Create Schema",
+        "category": "HCSTools"
+      },
+      {
+        "command": "hcstools.createModel",
+        "title": "HCSTools: Create Model",
+        "category": "HCSTools"
+      },
+      {
+        "command": "hcstools.verifyAll",
+        "title": "HCSTools: Verify All",
+        "category": "HCSTools"
+      },
+      {
+        "command": "hcstools.buildAll",
+        "title": "HCSTools: Build All",
+        "category": "HCSTools"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "hcstools.createConfigSet",
+          "title": "HCSTools: Create Config Set"
+        },
+        {
+          "command": "hcstools.createSchema",
+          "title": "HCSTools: Create Schema"
+        },
+        {
+          "command": "hcstools.createModel",
+          "title": "HCSTools: Create Model"
+        },
+        {
+          "command": "hcstools.verifyAll",
+          "title": "HCSTools: Verify All"
+        },
+        {
+          "command": "hcstools.buildAll",
+          "title": "HCSTools: Build All"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf out",
+    "build": "yarn link hcs-lib && tsc -p ./",
+    "test": "vscode-test",
+    "watch": "tsc -watch -p ./",
+    "fullclean": "rm -rf out node_modules .vscode-test",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.97.0",
+    "@typescript-eslint/eslint-plugin": "^8.22.0",
+    "@typescript-eslint/parser": "^8.22.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.19.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+  }
+}

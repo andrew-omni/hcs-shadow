@@ -1,0 +1,10 @@
+{
+  "mochaExplorer.files": ["src/test/**/*.test.ts"],
+  "mochaExplorer.require": ["ts-node/register"],
+  "mochaExplorer.ui": "bdd",
+  "mochaExplorer.env": {
+    "TS_NODE_CACHE": "false"
+  },
+  "mochaExplorer.logpanel": true,
+  "mochaExplorer.logfile": "${workspaceFolder}/mocha-explorer.log"
+}
