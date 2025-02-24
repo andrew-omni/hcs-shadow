@@ -8,45 +8,37 @@ This monorepo contains all the essential packages for managing HCS configuration
 
 ---
 
+## Web Editor
+
+If you'd like to explore the extension without downloading and installing everything, use the web editor in Github and the hcs-demo package.  Visit (hcs-demo)[hcsdemolink]
+
+---
+
 ## 🚀 Project Setup
-
-### 🗕️ Prerequisites
-
-- Node.js >= 14.x
-- Yarn (preferred) or npm
-- Visual Studio Code (VS Code)
 
 ### 📦 Installation
 
 1. **Clone the Monorepo**
 
 ```bash
-git clone https://github.com/omniscient-ai/hcs.gi
+git clone https://github.com/omniscient-ai/hcs.git
 cd hcs
-chmod 755 build-scripts/buildAll.sh
-./build-scripts/buildAll.sh
 ```
 
-2. **ALTERNATE: Set Up the Packages**
+2. **Build/Test Packages**
 
-If you didn't run buildAll.sh above, you should build and verify the packages in this order:
-
-#### 🔧 hcs-lib
 ```bash
+# hcs-lib
 cd hcs-lib
 yarn build
 yarn test
-```
 
-#### 🛠️ hcs-cli
-```bash
+# hcs-cli
 cd ../hcs-cli
 yarn build
 yarn test
-```
 
-#### 🧹 hcs-extension
-```bash
+# hcs-extension
 cd ../hcs-extension
 yarn build
 yarn test
@@ -57,13 +49,9 @@ yarn test
 ## 💻 Developing and Using the VS Code Extension
 
 1. **Activate the Workspace:**  
-   To ensure Mocha Test Explorer detects all tests across sub-packages, open the `monoweb.code-workspace` file directly:
+   You can open the root folder (containing the .git dir), but VSCode testing (Mocha Test Explorer) expects you to be in a VSCode Workspace.  Ppen the `monoweb.code-workspace` file directly:
    - Go to **File → Open Workspace from File...** in VS Code.
    - Select the `monorepo.code-workspace` file.
-   - Alternatively, run this command from your terminal:
-     ```bash
-     code /path/to/hcs-monorepo/hcs-monorepo.code-workspace
-     ```
    - You should now see all tests from `hcs-lib`, `hcs-cli`, and `hcs-extension` in the Mocha Test Explorer.
 
 2. **Launch hcs-lib WATCH**
@@ -79,21 +67,16 @@ yarn test
 ---
 
 ## 🚀 Running tests
-    Install https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-mocha-test-adapter to see tests in the UI.
-    All tests should load in the extension window.
+Install https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-mocha-test-adapter to see tests in the UI.  All tests should load in the extension window.
 
 
-### buildAll.sh and the Demo Project
-    buildAll.sh will build, test, and package all sub-packages in the monorepo. It will also copy the output files to a specified directory.
-    The externally tracked hcs-demo project uses this approach to repopulate the `dist` directory with the latest builds.
+## buildAll.sh and the Demo Project
+buildAll.sh will build, test, and package all sub-packages in the monorepo. It will also copy the output files to a specified `-out` directory.  The externally tracked hcs-demo project uses this approach to repopulate itself with the latest builds.
 
-### 📙 More Information
+## 📙 More Information
 
-Each sub-package has its own detailed `README.md` explaining how to use and develop within that specific package:
-
-- **hcs-lib**: Core validation and management library for HCS.
-- **hcs-cli**: Terminal tool for interacting with HCS configurations.
-- **hcs-extension**: GUI for VS Code users.
+* Each sub-package has its own detailed `README.md` explaining how to use and develop within that specific package.
+* Each project contains checked in .vscode directories which influence how VSCode works and is wired.  This is a bit atypical, but as we're developing an extension via a monorepo, correct configuration is important and non-trivial.
 
 ---
 
@@ -110,7 +93,8 @@ hcs-monorepo/
 │
 ├── hcs-monorepo.code-workspace  # Workspace configuration
 │
-├── package.json        # Root configuration for Yarn workspaces (if applicable)
+├── .devcontainer/      # Visual Studio / GitHub Editor Setup
+|
 └── README.md           # Main project documentation
 ```
 

@@ -1,0 +1,16 @@
+{
+  "name": "My Project with Omni HC Extension",
+  "image": "mcr.microsoft.com/vscode/devcontainers/javascript-node",
+  "workspaceFolder": "/workspaces/hcs-shadow",
+  "postCreateCommand": "cd hcs-extension/ && yarn global add typescript && yarn fullbuild && yarn install -g @vscode/vsce && vsce package",
+  "postStartCommand": "code --install-extension hcs-extension/hcs-extension-0.0.1.vsix",
+  "forwardPorts": [3000],
+  "extensions": [
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ],
+  "settings": {
+    "editor.formatOnSave": true
+  }
+}

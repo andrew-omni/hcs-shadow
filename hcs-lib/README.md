@@ -4,22 +4,16 @@ HCS-Lib is a TypeScript library for managing HCS configuration sets, schemas, an
 
 ## 🚀 Project Setup
 
-### Prerequisites
-
-- Node.js >= 14.x  
-- Yarn (preferred) or npm  
-- VS Code (recommended)  
-- [Mocha Test Explorer](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-mocha-test-adapter) extension for VS Code (recommended for running and debugging tests)
-
 ### 📦 Installation
 
 Clone the parent repository and install dependencies:
 
 ```bash
-git clone PARENT_REPO_URL
-cd parent/hcs-lib
 yarn install
+yarn clean && yarn build
+yarn watch
 ```
+
 ## 🔨 Build Process
 
 We use `tsup` as the bundler for this library.
@@ -73,11 +67,3 @@ To run all test suites:
 ```bash
 yarn test
 ```
-
-### 🐞 Debugging Tests
-
-1. Install the **Mocha Test Explorer** extension in VS Code.  
-2. Open the **Test Explorer** view (from the sidebar).  
-3. Click **Run** or **Debug** on individual tests or test suites.
-
-Happy coding! 🚀

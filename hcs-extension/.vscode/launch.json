@@ -2,16 +2,29 @@
 	"version": "0.2.0",
 	"configurations": [
 	  {
-		"name": "Run Extension",
+		"name": "Run Extension with Library Debugging",
 		"type": "extensionHost",
 		"request": "launch",
+		"runtimeExecutable": "${execPath}",
 		"args": [
 		  "--extensionDevelopmentPath=${workspaceFolder}"
 		],
 		"outFiles": [
-		  "${workspaceFolder}/out/**/*.js"
+		  "${workspaceFolder}/out/**/*.js",
+		  "${workspaceFolder}/node_modules/hcs-lib/dist/**/*.js"
 		],
-		"preLaunchTask": "build-extension"
+		"sourceMaps": true,
+		"resolveSourceMapLocations": [
+		  "${workspaceFolder}/**",
+		  "${workspaceFolder}/node_modules/hcs-lib/dist/**"  // Add `/dist/` to match source maps
+		],
+		"preLaunchTask": "build-extension",
+		"skipFiles": [
+		  "<node_internals>/**",
+		  "**/node_modules/**" // Exclude node_modules except hcs-lib
+		],
+		"trace": true  // Logs VSCode debugger activity for easier troubleshooting
 	  }
 	]
   }
+  

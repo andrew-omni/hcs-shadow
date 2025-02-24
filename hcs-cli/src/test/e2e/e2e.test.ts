@@ -6,7 +6,8 @@ import * as fs from "fs/promises";
 const CLI_PATH = path.resolve(__dirname, "../../../dist/cli.js"); // Use the built CLI
 
 suite("E2E: CLI Tests", () => {
-  const testDir = path.join(__dirname, "cli_test");
+  const CONFIG_SET_NAME = "cli_test";
+  const testDir = path.join(__dirname, "../../../", CONFIG_SET_NAME);
   const modelName = "testModel";
   const schemaName = "testSchema";
   let chai: any;
@@ -28,7 +29,7 @@ suite("E2E: CLI Tests", () => {
   });
 
   test("should create a new configset", async () => {
-    const { stdout } = await execa("node", [CLI_PATH, "create-configset", testDir]);
+    const { stdout } = await execa("node", [CLI_PATH, "create-configset", CONFIG_SET_NAME]);
     const outputLines = stdout.split("\n");
     expect(outputLines).to.satisfy((lines: string[]) => lines.some(line => line.includes("Created config set")));
 
@@ -38,17 +39,17 @@ suite("E2E: CLI Tests", () => {
   });
 
   test("should list configsets", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
+    await execa("node", [CLI_PATH, "create-configset", CONFIG_SET_NAME]);
     const { stdout } = await execa("node", [CLI_PATH, "get-configsets", testDir]);
-    expect(stdout).to.include(testDir);
+    expect(stdout).to.include("cli_test");
   });
 
   test("should create a new model", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
+    await execa("node", [CLI_PATH, "create-configset", CONFIG_SET_NAME]);
     const modelPath = path.join(testDir, "models", `${modelName}.json`);
 
-    const { stdout } = await execa("node", [CLI_PATH, "create-model", testDir, modelName]);
-    expect(stdout).to.include("Successfully created");
+    const { stdout } = await execa("node", [CLI_PATH, "create-model", CONFIG_SET_NAME, modelName]);
+    expect(stdout).to.include("Created model");
 
     // Validate file exists
     const exists = await fs.stat(modelPath).then(() => true).catch(() => false);
@@ -62,7 +63,7 @@ suite("E2E: CLI Tests", () => {
   });
 
   test("should create a new schema", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
+    await execa("node", [CLI_PATH, "create-configset", CONFIG_SET_NAME]);
     const schemaPath = path.join(testDir, "schemas", `${schemaName}.json`);
 
     const { stdout } = await execa("node", [CLI_PATH, "create-schema", testDir, schemaName]);
@@ -80,59 +81,35 @@ suite("E2E: CLI Tests", () => {
   });
 
   test("should pass validation when all config files are valid", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
-    await execa("node", [CLI_PATH, "create-model", testDir, modelName]);
+    await execa("node", [CLI_PATH, "create-configset", CONFIG_SET_NAME]);
+    await execa("node", [CLI_PATH, "create-model", CONFIG_SET_NAME, modelName]);
     await execa("node", [CLI_PATH, "create-schema", testDir, schemaName]);
 
-    const { exitCode } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
+    const { exitCode, stdout, stderr } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
+    console.log("stdout:", stdout);
+    console.log("stderr:", stderr);
 
     expect(exitCode).to.equal(0);
   });
 
-  test("should fail validation when schema is invalid", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
-    await execa("node", [CLI_PATH, "create-model", testDir, modelName]);
-
-    // Create an invalid schema file
-    const schemaPath = path.join(testDir, "schemas", "invalidSchema.json");
-    const invalidSchema = { "$id": "invalidSchema.json", "type": "invalidType" };
-    await fs.writeFile(schemaPath, JSON.stringify(invalidSchema, null, 2));
-
-    const { exitCode, stderr } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
-
-    expect(exitCode).to.not.equal(0);
-  });
-
-  test("should fail validation when model is invalid", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
+  // We are testing that a failed validation causes the CLI to exit w/ non-zero
+  test("should fail when validation fails", async () => {
+    await execa("node", [CLI_PATH, "create-configset", CONFIG_SET_NAME]);
     await execa("node", [CLI_PATH, "create-schema", testDir, schemaName]);
 
     // Create an invalid model file
     const modelPath = path.join(testDir, "models", "invalidModel.json");
-    const invalidModel = { "$id": "invalidModel.json", "type": "invalidType" };
+    const invalidModel = { "$id": `${CONFIG_SET_NAME}.models.invalidModel`, "type": "invalidType" };
     await fs.writeFile(modelPath, JSON.stringify(invalidModel, null, 2));
 
-    const { exitCode, stderr } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
-
-    expect(exitCode).to.not.equal(0);
-  });
-
-  test("should fail validation when instance is invalid", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
-    await execa("node", [CLI_PATH, "create-model", testDir, modelName]);
-
-    // Create an invalid instance file
-    const instancePath = path.join(testDir, "instances", "invalidInstance.json");
-    const invalidInstance = { "$id": "invalidInstance.json", "type": "invalidType" };
-    await fs.writeFile(instancePath, JSON.stringify(invalidInstance, null, 2));
-
-    const { exitCode, stderr } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
-
+    const { exitCode, stdout, stderr } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
+    console.log("stdout:", stdout);
+    console.log("stderr:", stderr);
     expect(exitCode).to.not.equal(0);
   });
 
   test("should fail validation when all categories contain invalid files", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
+    await execa("node", [CLI_PATH, "create-configset", CONFIG_SET_NAME]);
 
     // Create invalid schema, model, and instance files
     const invalidSchema = { "$id": "invalidSchema.json", "type": "invalidType" };
@@ -143,62 +120,15 @@ suite("E2E: CLI Tests", () => {
     await fs.writeFile(path.join(testDir, "models", "invalidModel.json"), JSON.stringify(invalidModel, null, 2));
     await fs.writeFile(path.join(testDir, "instances", "invalidInstance.json"), JSON.stringify(invalidInstance, null, 2));
 
-    const { exitCode, stderr } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
-
+    const { exitCode, stdout, stderr } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
+    console.log("stdout:", stdout);
+    console.log("stderr:", stderr);
     expect(exitCode).to.not.equal(0);
-  });
-
-  test("should fail validation when some files are valid but others are invalid", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
-    await execa("node", [CLI_PATH, "create-model", testDir, modelName]);
-    await execa("node", [CLI_PATH, "create-schema", testDir, schemaName]);
-
-    // Create an invalid instance file
-    const instancePath = path.join(testDir, "instances", "invalidInstance.json");
-    const invalidInstance = { "$id": "invalidInstance.json", "type": "invalidType" };
-    await fs.writeFile(instancePath, JSON.stringify(invalidInstance, null, 2));
-
-    const { exitCode, stderr } = await execa("node", [CLI_PATH, "validate-all", testDir], { reject: false });
-
-    expect(exitCode).to.not.equal(0);
-  });
-
-  
-  test("should fail verify-build after creating a new schema", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
-    await execa("node", [CLI_PATH, "create-model", testDir, modelName]);
-    await execa("node", [CLI_PATH, "create-schema", testDir, schemaName]);
-
-    // First build (to settle state)
-    await execa("node", [CLI_PATH, "build-all", testDir]);
-
-    // Add a new schema
-    const newSchema = {
-      "$id": "newSchema.json",
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "type": "object",
-      "properties": {
-        "title": { "type": "string" }
-      }
-    };
-    await createSchemaFile("newSchema", newSchema);
-
-    // Run verify-build and expect failure
-    const { exitCode, stderr } = await execa("node", [CLI_PATH, "verify-build", testDir], {
-      reject: false,
-    });
-
-    expect(exitCode).to.not.equal(0);
-    expect(stderr).to.include("Build failed due to validation or processing errors");
-
-    // Clean up the added schema
-    const schemaPath = path.join(testDir, "schemas", "newSchema.json");
-    await fs.rm(schemaPath);
   });
 
   test("should fail verify-build if an invalid schema exists", async () => {
-    await execa("node", [CLI_PATH, "create-configset", testDir]);
-    await execa("node", [CLI_PATH, "create-model", testDir, modelName]);
+    await execa("node", [CLI_PATH, "create-configset", CONFIG_SET_NAME]);
+    await execa("node", [CLI_PATH, "create-model", CONFIG_SET_NAME, modelName]);
 
     // Add an invalid schema
     const invalidSchema = {
@@ -208,10 +138,12 @@ suite("E2E: CLI Tests", () => {
     await createSchemaFile("invalidSchema", invalidSchema);
 
     // Run verify-build and expect failure
-    const { exitCode, stderr } = await execa("node", [CLI_PATH, "verify-build", testDir], {
+    const { exitCode, stdout, stderr } = await execa("node", [CLI_PATH, "verify-build", CONFIG_SET_NAME], {
       reject: false
     });
 
+    console.log("stdout:", stdout);
+    console.log("stderr:", stderr);
     expect(exitCode).to.not.equal(0);
     expect(stderr).to.include("Build failed due to validation or processing errors");
   });

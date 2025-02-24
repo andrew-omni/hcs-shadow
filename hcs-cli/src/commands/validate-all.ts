@@ -1,4 +1,4 @@
-import { NodeFs, ConfigSet, ConfigSetManager, validateAll } from "hcs-lib";
+import { HcsManager, NodeFs, NodeGit } from "hcs-lib";
 
 /**
  * CLI command to validate all schemas, models, and instances in a config set.
@@ -7,24 +7,23 @@ import { NodeFs, ConfigSet, ConfigSetManager, validateAll } from "hcs-lib";
  */
 export async function validateAllCommand(configsetPath: string) {
   const fs = new NodeFs();
+  const git = new NodeGit();
 
   try {
-    // Load the config set
-    const configSet = await ConfigSet.loadConfigSet(configsetPath, fs);
-    const configSetManager = new ConfigSetManager(configSet, fs);
+    const hcsManager = new HcsManager([process.cwd()], fs, git);
+    await hcsManager.initialize();
 
-    // Ensure all resources are loaded before validation
-    await configSetManager.reloadResources();
-
-    // Perform validation
-    const validationResult = await validateAll(configSetManager);
-
-    if (!validationResult.success) {
-      // Failed validation - error out - this is a workflow hook
+    const failOnFileChanges: boolean = false;
+    const pipelineResults = await hcsManager.runPipelineForAll(failOnFileChanges);
+    // Log results
+    if (pipelineResults.hasErrors) {
+      console.error(`❌ Validation failed with errors:`, JSON.stringify(pipelineResults.results, null, 2));
       process.exit(1);
+    } else {
+      console.log(`✅ Validation succeeded.`);
     }
   } catch (error) {
-    console.error(`❌ Error validating config set:`, error);
-    process.exit(1);
+    console.error(`❌ Build failed due to validation or processing errors:`, error);
+    throw error;
   }
 }

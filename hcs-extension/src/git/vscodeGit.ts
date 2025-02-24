@@ -1,6 +1,9 @@
 import * as vscode from "vscode";
 import { GitAdapter } from "hcs-lib";
 
+import { Log } from "../logger";
+const LOG_CLS_SHORT = "vgt";
+
 export class VsCodeGit implements GitAdapter {
     private gitApi: any | null = null;
 
@@ -22,9 +25,9 @@ export class VsCodeGit implements GitAdapter {
         this.gitApi = await gitExtension.activate();
 
         if (!this.gitApi) {
-            console.error("❌ Failed to activate Git API.");
+            Log.error(LOG_CLS_SHORT, "VGT", "Failed to activate Git API.");
         } else {
-            console.log("✅ Git API activated.");
+            Log.verbose(LOG_CLS_SHORT, "VGT", "Git API activated.");
         }
     }
 
@@ -45,9 +48,9 @@ export class VsCodeGit implements GitAdapter {
         );
 
         if (repo) {
-            console.log(`✅ Found repository: ${repo.rootUri.fsPath}`);
+            Log.verbose(LOG_CLS_SHORT, "VGT", `Found repository: ${repo.rootUri.fsPath}`);
         } else {
-            console.warn(`⚠️ No repository found for: ${filePath}`);
+            Log.warn(LOG_CLS_SHORT, "VGT", `No repository found for: ${filePath}`);
         }
 
         return repo || null;
@@ -76,7 +79,7 @@ export class VsCodeGit implements GitAdapter {
         const tracked = this.isFileInChanges(filePath, repo.state.indexChanges) ||
                         this.isFileInChanges(filePath, repo.state.workingTreeChanges);
 
-        console.log(`🔍 File ${filePath} is ${tracked ? "tracked" : "untracked"}`);
+        Log.debug(LOG_CLS_SHORT, "VGT", `File ${filePath} is ${tracked ? "tracked" : "untracked"}`);
         return tracked;
     }
 
@@ -93,8 +96,7 @@ export class VsCodeGit implements GitAdapter {
         const hasChanges = this.isFileInChanges(filePath, repo.state.workingTreeChanges) ||
                            this.isFileInChanges(filePath, repo.state.indexChanges) ||
                            this.isFileInChanges(filePath, repo.state.mergeChanges);
-
-        console.log(`🔍 Git change status for ${filePath}: ${hasChanges ? "CHANGED" : "UNCHANGED"}`);
+        Log.debug(LOG_CLS_SHORT, "VGT", `File ${filePath} has ${hasChanges ? "changes" : "no changes"}`);
         return hasChanges;
     }
 

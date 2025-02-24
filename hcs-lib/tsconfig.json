@@ -1,14 +1,16 @@
 {
 	"compilerOptions": {
+	  "declaration": true,               // Generate type declaration files
+	  "declarationMap": true,            // Generate declaration maps
+	  "emitDeclarationOnly": false,      // Emit both JS and declaration files
+	  "outDir": "dist",                  // Output directory for compiled files
+	  "rootDir": "src",                  // Input directory for TypeScript files
 	  "module": "Node16",
 	  "moduleResolution": "nodenext",
 	  "target": "ES2022",
 	  "lib": ["ES2022"],
-	  "declaration": true,
-	  "declarationMap": true,
-	  "outDir": "dist",
-	  "rootDir": "src",
 	  "sourceMap": true,
+	  "inlineSources": true,             // Embed TS source in source maps
 	  "esModuleInterop": true,
 	  "skipLibCheck": true,
 	  "strict": true

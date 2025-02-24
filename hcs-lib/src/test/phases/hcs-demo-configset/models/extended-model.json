@@ -1,0 +1,9 @@
+{
+  "$id": "hcs-demo-configset.models.extended-model",
+  "$version": 1,
+  "$refs": [
+    "hcs-demo-configset.schemas.extended-schema",
+    "hcs-demo-configset.models.base-model"
+  ],
+  "name": "Name from extended-model"
+}

@@ -15,10 +15,12 @@
   "scripts": {
     "clean": "rm -rf dist build",
     "build": "yarn link hcs-lib && ncc build src/cli.ts -o dist && mv dist/index.js dist/cli.js",
-    "test": "yarn build && mocha --require ts-node/register --recursive 'src/test/**/*.test.ts'",
-      "package": "yarn build && tar -czf dist/hcs-cli.tar.gz -C dist cli.js"
+    "deploy-build": "yarn unlink hcs-lib && yarn install --frozen-lockfile --force && ncc build src/cli.ts -o dist && mv dist/index.js dist/cli.js",
+    "test": "mocha --require ts-node/register --recursive 'src/test/**/*.test.ts'",
+    "package": "tar -czf dist/hcs-cli.tar.gz -C dist cli.js"
   },
   "dependencies": {
+    "hcs-lib": "file:../hcs-lib",
     "chalk": "^5.3.0",
     "commander": "^11.0.0"
   },

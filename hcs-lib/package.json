@@ -1,61 +1,62 @@
 {
   "name": "hcs-lib",
   "version": "1.0.0",
-  "description": "A library for managing HCS configuration sets, schemas, and models.",
+  "description": "Library for managing configuration sets",
   "repository": {
     "type": "git",
-    "url": "https://github.com/omniscient-ai/hcs"
+    "url": "git+https://github.com/omniscient-ai/hcs.git"
   },
   "author": "Andrew Austin <andrew.austin@omniscient.uk.com>",
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": {
-    "clean": "rm -rf dist",
-    "build": "yarn type-check && tsup src/index.ts --format=cjs --dts --out-dir dist && yarn link",
-    "test": "mocha --require ts-node/register --clear-cache --recursive 'src/test/**/*.test.ts'",
-    "package": "yarn pack",
-    "type-check": "tsc --noEmit",
-    "watch": "tsup src/index.ts --watch --format=cjs --dts --out-dir dist",
-    "test:watch": "mocha --watch --require ts-node/register --recursive 'src/test/**/*.test.ts'"
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./*": {
+      "require": "./dist/*.js",
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
   },
-  "keywords": [
-    "HCS",
-    "schema",
-    "model",
-    "configuration",
-    "library",
-    "json"
-  ],
   "files": [
     "dist/**/*"
   ],
-  "type": "commonjs",
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "devDependencies": {
-    "@types/chai": "^5.0.1",
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^20.x",
-    "@types/sinon": "^17.0.3",
-    "@types/vscode": "^1.75.0",
-    "@typescript-eslint/eslint-plugin": "^8.22.0",
-    "@typescript-eslint/parser": "^8.22.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1",
-    "chai": "^5.2.0",
-    "eslint": "^9.19.0",
-    "glob": "^11.0.1",
-    "mocha": "^10.8.2",
-    "sinon": "^19.0.2",
-    "ts-mocha": "^10.0.0",
-    "tsup": "^8.3.6",
-    "typescript": "^5.7.3"
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "yarn link && tsc",
+    "deploy-build": "tsc",
+    "watch": "tsc -w",
+    "prepublishOnly": "yarn clean && yarn build",
+    "test": "mocha --require ts-node/register --recursive 'src/test/**/*.test.ts'",
+    "package": "tar -czf dist/hcs-lib.tar.gz -C dist index.js"
   },
   "dependencies": {
     "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1"
-  }
+    "ajv-formats": "^3.0.1",
+    "chalk": "^5.3.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.0.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.13.5",
+    "chai": "^4.5.0",
+    "mocha": "^10.8.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/omniscient-ai/hcs/issues"
+  },
+  "homepage": "https://github.com/omniscient-ai/hcs#readme"
 }

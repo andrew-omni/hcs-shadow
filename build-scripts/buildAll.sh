@@ -32,7 +32,7 @@ run_build() {
   yarn clean
 
   echo "🔨 Building..."
-  yarn build
+  yarn deploy-build
 
   echo "🧪 Testing..."
   yarn test

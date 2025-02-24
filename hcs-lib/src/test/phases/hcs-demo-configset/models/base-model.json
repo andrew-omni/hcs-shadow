@@ -1,0 +1,6 @@
+{
+  "$id": "hcs-demo-configset.models.base-model",
+  "$version": 1,
+  "$ref": "hcs-demo-configset.schemas.base-schema",
+  "some_prop": "Example value in base-model"
+}

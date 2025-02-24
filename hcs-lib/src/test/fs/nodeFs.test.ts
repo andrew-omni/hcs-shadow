@@ -46,7 +46,7 @@ suite("FsAdapter:  Test Suite", () => {
 
     test("should return false for non-existent file", async () => {
         console.log("🔎 Checking non-existent file...");
-        const exists = await nodeFs.fileExists(nonExistentFile);
+        const exists = await nodeFs.isExists(nonExistentFile);
         console.log(`✅ Exists check: ${exists}`);
         if (exists) {
             throw new Error("Expected file to not exist, but it does.");
@@ -58,7 +58,7 @@ suite("FsAdapter:  Test Suite", () => {
         await nodeFs.writeFile(testFile, "Exists");
 
         console.log("🔎 Checking existing file...");
-        const exists = await nodeFs.fileExists(testFile);
+        const exists = await nodeFs.isExists(testFile);
 
         console.log(`✅ Exists check: ${exists}`);
         if (!exists) {
@@ -87,7 +87,7 @@ suite("FsAdapter:  Test Suite", () => {
         await nodeFs.createDirectory(nestedDir);
 
         console.log("🔎 Checking if directory exists...");
-        const exists = await nodeFs.fileExists(nestedDir);
+        const exists = await nodeFs.isExists(nestedDir);
 
         console.log(`✅ Exists check: ${exists}`);
         if (!exists) {
@@ -143,47 +143,5 @@ suite("FsAdapter:  Test Suite", () => {
         await nodeFs.createDirectory(testDir);
 
         console.log("✅ No errors encountered.");
-    });
-
-    test("should correctly build full path from relative path", async () => {
-        const configSetRoot = "/home/user/configset";
-        const relativePath = "models/example.json";
-        const expectedFullPath = path.join(configSetRoot, relativePath);
-
-        console.log("🔎 Checking full path resolution...");
-        const fullPath = nodeFs.buildFullPathFromRelativePath(configSetRoot, relativePath);
-
-        console.log(`✅ Resolved path: ${fullPath}`);
-        if (fullPath !== expectedFullPath) {
-            throw new Error(`Expected ${expectedFullPath} but got ${fullPath}`);
-        }
-    });
-
-    test("should correctly handle absolute relative paths", async () => {
-        const configSetRoot = "/home/user/configset";
-        const relativePath = "/absolute/path/to/models/example.json"; // Should not be altered
-        const expectedFullPath = relativePath; // It should remain absolute
-
-        console.log("🔎 Checking absolute path resolution...");
-        const fullPath = nodeFs.buildFullPathFromRelativePath(configSetRoot, relativePath);
-
-        console.log(`✅ Resolved path: ${fullPath}`);
-        if (fullPath !== expectedFullPath) {
-            throw new Error(`Expected ${expectedFullPath} but got ${fullPath}`);
-        }
-    });
-
-    test("should correctly handle relative path with .. (parent directories)", async () => {
-        const configSetRoot = "/home/user/configset";
-        const relativePath = "../shared/schema.json";
-        const expectedFullPath = path.join(configSetRoot, relativePath);
-
-        console.log("🔎 Checking path with parent directory references...");
-        const fullPath = nodeFs.buildFullPathFromRelativePath(configSetRoot, relativePath);
-
-        console.log(`✅ Resolved path: ${fullPath}`);
-        if (fullPath !== expectedFullPath) {
-            throw new Error(`Expected ${expectedFullPath} but got ${fullPath}`);
-        }
     });
 });

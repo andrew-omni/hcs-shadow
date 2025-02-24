@@ -1,0 +1,10 @@
+{
+  "$id": "hcs-demo-configset.schemas.base-schema",
+  "$version": 1,
+  "properties": {
+    "some_prop": {
+      "type": "string",
+      "description": "A property for the base schema"
+    }
+  }
+}

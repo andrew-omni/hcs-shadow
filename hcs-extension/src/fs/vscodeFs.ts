@@ -3,15 +3,25 @@ import { FsAdapter } from "hcs-lib";
 
 export class VsCodeFs implements FsAdapter {
 
-    buildFullPathFromRelativePath(configSetRootPath: string, relativePath: string): string {
-        const fullPathUri = vscode.Uri.joinPath(vscode.Uri.file(configSetRootPath), relativePath);
-        return fullPathUri.fsPath;
-    }
+    buildAbsPathForId(configSetRootPath: string, id: string): string {
+        // Extract the category (e.g., models, schemas, instances) and filename
+        const idParts = id.split('.');
+        if (idParts.length < 3) {
+            throw new Error(`Invalid ID format: ${id}. Expected format 'configset.type.name'`);
 
-    buildStripRelPathAndBuildFullPath(configSetRootPath: string, relativePath: string): string {
-        const strippedRelPath = relativePath.replace(/\.\.\//g, "");
-        const fullPathUri = vscode.Uri.joinPath(vscode.Uri.file(configSetRootPath), strippedRelPath);
-        return fullPathUri.fsPath;
+        }
+        const category = idParts[1]; // e.g., 'models'
+        const baseFilename = `${idParts[2]}`; // e.g., 'validModel'
+
+        // Build the absolute path
+        if (idParts.length === 4) {
+            // Versioned files live in a directory named after the base filename
+            return `${configSetRootPath}/${category}/${baseFilename}/${baseFilename}_${idParts[3]}.json`;
+        } else if (idParts.length === 3) {
+            return `${configSetRootPath}/${category}/${baseFilename}.json`;
+        } else {
+            throw new Error(`Invalid ID format: ${id}. Expected format 'configset.type.name' or 'configset.type.name.version'`);
+        }
     }
 
     async readFile(filePath: string): Promise<string> {
@@ -25,7 +35,7 @@ export class VsCodeFs implements FsAdapter {
         await vscode.workspace.fs.writeFile(uri, Buffer.from(content, "utf-8"));
     }
 
-    async fileExists(filePath: string): Promise<boolean> {
+    async isExists(filePath: string): Promise<boolean> {
         const uri = vscode.Uri.file(filePath);
         try {
             await vscode.workspace.fs.stat(uri);
@@ -33,6 +43,12 @@ export class VsCodeFs implements FsAdapter {
         } catch {
             return false;
         }
+    }
+
+    async isDirectory(filePath: string): Promise<boolean> {
+        const uri = vscode.Uri.file(filePath);
+        const stats = await vscode.workspace.fs.stat(uri);
+        return stats.type === vscode.FileType.Directory;
     }
 
     async readDirectory(dirPath: string): Promise<string[]> {

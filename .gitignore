@@ -24,7 +24,7 @@ __pycache__/
 # Distribution / Packaging
 *.egg-info/
 dist/
-build/
+/build/
 
 # Ignoring built / distributables
 *.vsix

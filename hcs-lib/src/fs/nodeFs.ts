@@ -3,21 +3,25 @@ import { FsAdapter } from "./fsAdapter";
 import * as path from "path";
 
 export class NodeFs implements FsAdapter {
-    buildFullPathFromRelativePath(configSetRootPath: string, relativePath: string): string {
-        const fullPath = path.resolve(configSetRootPath, relativePath);
-        return fullPath;
-    }
+    
+    buildAbsPathForId(configSetRootPath: string, id: string): string {
+        // Extract the category (e.g., models, schemas, instances) and filename
+        const idParts = id.split('.');
+        if (idParts.length < 3) {
+            throw new Error(`Invalid ID format: ${id}. Expected format 'configset.type.name'`);
+        }
+        const category = idParts[1]; // e.g., 'models'
+        const baseFilename = `${idParts[2]}`; // e.g., 'validModel'
 
-    /*
-     * Relative paths are good for referencing other files, but badd for communicating errors
-    * back to clients.  Sometimes we know a file by it's ref, but we want the full path.
-    * In these cases, we don't want to resolve the rootPath + refPath, as that would let 
-    * '..' take effect.  Instead, we strip out the '..' and then resolve the path.
-    */
-    buildStripRelPathAndBuildFullPath(configSetRootPath: string, relativePath: string): string {
-        const strippedRelPath = relativePath.replace(/\.\.\//g, "");
-        const fullPath = path.resolve(configSetRootPath, strippedRelPath);
-        return fullPath;
+        // Build the absolute path
+        if (idParts.length === 4) {
+            // Versioned files live in a directory named after the base filename
+            return `${configSetRootPath}/${category}/${baseFilename}/${baseFilename}_${idParts[3]}.json`;
+        } else if (idParts.length === 3) {
+            return `${configSetRootPath}/${category}/${baseFilename}.json`;
+        } else {
+            throw new Error(`Invalid ID format: ${id}. Expected format 'configset.type.name' or 'configset.type.name.version'`);
+        }
     }
 
     async readFile(filePath: string): Promise<string> {
@@ -28,13 +32,18 @@ export class NodeFs implements FsAdapter {
         await fs.writeFile(filePath, content, "utf-8");
     }
 
-    async fileExists(filePath: string): Promise<boolean> {
+    async isExists(filePath: string): Promise<boolean> {
         try {
             await fs.access(filePath);
             return true;
         } catch {
             return false;
         }
+    }
+
+    async isDirectory(filePath: string): Promise<boolean> {
+        const stats = await fs.stat(filePath);
+        return stats.isDirectory();
     }
 
     async readDirectory(dirPath: string): Promise<string[]> {

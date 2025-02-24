@@ -1,5 +1,4 @@
-import { NodeFs } from "hcs-lib";
-import { ConfigSet, ConfigSetManager } from "hcs-lib";
+import { HcsManager, NodeFs, NodeGit } from "hcs-lib";
 
 /**
  * CLI command to validate and build all schemas, models, and instances.
@@ -8,18 +7,14 @@ import { ConfigSet, ConfigSetManager } from "hcs-lib";
  */
 export async function verifyBuild(configsetPath: string) {
   const fs = new NodeFs();
+  const git = new NodeGit();
 
-  // Step 1: Load the config set
-  const configSet = await ConfigSet.loadConfigSet(configsetPath, fs);
-  const configSetManager = new ConfigSetManager(configSet, fs);
-
-  // Step 2: Reload resources (schemas, models, instances)
-  await configSetManager.reloadResources();
-
-  // Step 3: Perform the build
   try {
+    const hcsManager = new HcsManager([configsetPath], fs, git);
+    await hcsManager.initialize();
+
     const failOnFileChanges: boolean = true;
-    await configSetManager.buildAll(failOnFileChanges);
+    await hcsManager.runPipelineForAll(failOnFileChanges);
   } catch (error) {
     console.error(`❌ Build failed due to validation or processing errors:`, error);
     throw error;

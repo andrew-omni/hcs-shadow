@@ -6,6 +6,8 @@ import * as path from "path";
 
 const execAsync = promisify(exec);
 
+import { Log } from "../logger";
+const LOG_CLS_SHORT = "ngt";
 export class NodeGit implements GitAdapter {
     /**
      * Discovers the root of the Git repository by traversing up the directory tree.
@@ -55,7 +57,7 @@ export class NodeGit implements GitAdapter {
             }
 
             // Check if the file is tracked
-            console.log(`🔍 Checking if file is tracked in Git: ${filePath}`);
+            Log.verbose(LOG_CLS_SHORT, "GIT", `Checking if file is tracked in Git: ${filePath}`);
             await execAsync(`git ls-files --error-unmatch "${relativePath}"`, { cwd: repoPath });
             return true;
         } catch (error) {
@@ -73,12 +75,11 @@ export class NodeGit implements GitAdapter {
             console.warn(`⚠️ Not inside a Git repository: ${filePath}`);
             return false;
         }
-
-        console.log(`🔍 Checking if file is changed in Git: ${filePath}`);
+        Log.verbose(LOG_CLS_SHORT, "GIT", `Checking if file is changed in Git: ${filePath}`);
 
         try {
             if (!fs.existsSync(filePath)) {
-                console.warn(`⚠️ File does not exist: ${filePath}`);
+                Log.warn(LOG_CLS_SHORT, "GIT", `⚠️ File does not exist: ${filePath}`);
                 return false;
             }
 
@@ -86,14 +87,14 @@ export class NodeGit implements GitAdapter {
             const { stdout } = await execAsync(`git status --porcelain "${filePath}"`, { cwd: repoPath });
 
             if (stdout.trim().length > 0) {
-                console.log(`❌ File is modified or untracked: ${filePath}`);
+                Log.debug(LOG_CLS_SHORT, "GIT", `❌ File is modified or untracked: ${filePath}`);
                 return true;
             }
 
-            console.log(`✅ File is unchanged from Git: ${filePath}`);
+            Log.verbose(LOG_CLS_SHORT, "GIT", `✅ File is unchanged from Git: ${filePath}`);
             return false;
         } catch (error) {
-            console.error(`❌ Error checking Git changes for: ${filePath}`, error);
+            Log.error(LOG_CLS_SHORT, "GIT", `❌ Error checking Git changes for: ${filePath}: ${error}`);
             return true; // Fail-safe: Assume file is changed
         }
     }
